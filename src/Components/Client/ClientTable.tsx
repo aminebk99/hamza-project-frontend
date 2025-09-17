@@ -1,4 +1,3 @@
-import React from 'react';
 import { Edit2, Trash2, User } from 'lucide-react';
 
 const ClientTable = ({ clients, onEdit, onDelete, searchTerm }) => {

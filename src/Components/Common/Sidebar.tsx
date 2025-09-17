@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, Users, FileText, BarChart3 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, onClose, activeItem, setActiveItem }) => {
@@ -41,7 +40,6 @@ const Sidebar = ({ isOpen, onClose, activeItem, setActiveItem }) => {
         </div>
       </aside>
 
-      {/* Mobile sidebar overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-10 bg-black bg-opacity-50 lg:hidden"

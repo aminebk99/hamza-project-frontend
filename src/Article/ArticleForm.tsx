@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const ClientForm = ({ client, onSubmit, onCancel }) => {
+const ArticleForm = ({ article, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    lastName: client?.lastName || '',
-    email: client?.email || '',
-    phone: client?.phone || '',
-    address: client?.address || '',
-    etat: client?.etat || '',
-    ice: client?.ice || ''
+    reference: article?.reference || '',
+    designation: article?.designation || '',
+    stockSecurite: article?.stockSecurite || '',
+    prixDAchatHT: article?.prixDAchatHT || '',
+    prixDeVenteHT: article?.prixDeVenteHT || '',
+    tva: article?.tva || '',
+    image: article?.image || ''
   });
-
-  // Define the enum values for Etat
-  const ETAT_OPTIONS = [
-    { value: 0, label: 'ACTIF' },
-    { value: 1, label: 'INACTIF' }
-  ];
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -23,37 +18,35 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+    if (!formData.reference.trim()) {
+      newErrors.reference = 'Reference is required';
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (!formData.designation.trim()) {
+      newErrors.designation = 'Designation is required';
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone is required';
+    if (!formData.stockSecurite || formData.stockSecurite < 0) {
+      newErrors.stockSecurite = 'Stock sécurité must be a positive number';
     }
 
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
+    if (!formData.prixDAchatHT || isNaN(parseFloat(formData.prixDAchatHT)) || parseFloat(formData.prixDAchatHT) < 0) {
+      newErrors.prixDAchatHT = 'Prix d\'achat HT must be a valid positive number';
     }
 
-    if (formData.etat === '' || formData.etat === null || formData.etat === undefined) {
-      newErrors.etat = 'État is required';
+    if (!formData.prixDeVenteHT || isNaN(parseFloat(formData.prixDeVenteHT)) || parseFloat(formData.prixDeVenteHT) < 0) {
+      newErrors.prixDeVenteHT = 'Prix de vente HT must be a valid positive number';
     }
 
-    if (!formData.ice.trim()) {
-      newErrors.ice = 'ICE is required';
+    if (!formData.tva || isNaN(parseFloat(formData.tva)) || parseFloat(formData.tva) < 0 || parseFloat(formData.tva) > 100) {
+      newErrors.tva = 'TVA must be a valid percentage between 0 and 100';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const saveClientToDatabase = async (clientData) => {
+  const saveArticleToDatabase = async (articleData) => {
     try {
       setIsLoading(true);
       
@@ -72,14 +65,15 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
       };
 
       const response = await axios.post(
-        'http://localhost:8090/api/client',
+        'http://localhost:8090/api/article',
         {
-          lastName: clientData.lastName.trim(),
-          email: clientData.email.trim().toLowerCase(),
-          phone: clientData.phone.trim(),
-          address: clientData.address.trim(),
-          etat: parseInt(clientData.etat), // Send as integer enum value
-          ice: clientData.ice.trim()
+          reference: articleData.reference.trim(),
+          designation: articleData.designation.trim(),
+          stockSecurite: parseInt(articleData.stockSecurite),
+          prixDAchatHT: parseFloat(articleData.prixDAchatHT),
+          prixDeVenteHT: parseFloat(articleData.prixDeVenteHT),
+          tva: parseFloat(articleData.tva),
+          image: articleData.image.trim() || null
         },
         config
       );
@@ -89,14 +83,14 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
         return {
           success: true,
           data: response.data,
-          message: 'Client saved successfully'
+          message: 'Article saved successfully'
         };
       } else {
         throw new Error(`Unexpected response status: ${response.status}`);
       }
 
     } catch (error) {
-      console.error('Error saving client:', error);
+      console.error('Error saving article:', error);
       
       // Handle different types of errors
       if (error.response) {
@@ -111,7 +105,7 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
         } else if (status === 403) {
           return { success: false, message: 'Access denied' };
         } else if (status === 409) {
-          return { success: false, message: 'Client already exists' };
+          return { success: false, message: 'Article reference already exists' };
         } else if (status >= 500) {
           return { success: false, message: 'Server error. Please try again later.' };
         } else {
@@ -143,7 +137,7 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
 
   const handleSubmit = async () => {
     if (validateForm()) {
-      const result = await saveClientToDatabase(formData);
+      const result = await saveArticleToDatabase(formData);
       
       if (result.success) {
         // Call the parent component's onSubmit with the result
@@ -197,121 +191,151 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Last Name <span className="text-red-500">*</span>
+          Reference <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          name="lastName"
-          value={formData.lastName}
+          name="reference"
+          value={formData.reference}
           onChange={handleChange}
           disabled={isLoading}
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.lastName ? 'border-red-300' : 'border-gray-300'
+            errors.reference ? 'border-red-300' : 'border-gray-300'
           }`}
-          placeholder="Enter last name"
+          placeholder="Enter article reference"
         />
-        {errors.lastName && (
-          <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+        {errors.reference && (
+          <p className="mt-1 text-sm text-red-600">{errors.reference}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Email <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          disabled={isLoading}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.email ? 'border-red-300' : 'border-gray-300'
-          }`}
-          placeholder="Enter email address"
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Phone <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          disabled={isLoading}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.phone ? 'border-red-300' : 'border-gray-300'
-          }`}
-          placeholder="Enter phone number"
-        />
-        {errors.phone && (
-          <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Address <span className="text-red-500">*</span>
+          Designation <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          name="address"
-          value={formData.address}
+          name="designation"
+          value={formData.designation}
           onChange={handleChange}
           disabled={isLoading}
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.address ? 'border-red-300' : 'border-gray-300'
+            errors.designation ? 'border-red-300' : 'border-gray-300'
           }`}
-          placeholder="Enter address"
+          placeholder="Enter article designation"
         />
-        {errors.address && (
-          <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+        {errors.designation && (
+          <p className="mt-1 text-sm text-red-600">{errors.designation}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          État (MAD) <span className="text-red-500">*</span>
+          Stock Sécurité <span className="text-red-500">*</span>
         </label>
         <input
-          type="text"
-          name="etat"
-          value={formData.etat}
+          type="number"
+          name="stockSecurite"
+          value={formData.stockSecurite}
           onChange={handleChange}
           disabled={isLoading}
+          min="0"
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.etat ? 'border-red-300' : 'border-gray-300'
+            errors.stockSecurite ? 'border-red-300' : 'border-gray-300'
           }`}
-          placeholder="Enter amount in MAD"
+          placeholder="Enter security stock quantity"
         />
-        {errors.etat && (
-          <p className="mt-1 text-sm text-red-600">{errors.etat}</p>
+        {errors.stockSecurite && (
+          <p className="mt-1 text-sm text-red-600">{errors.stockSecurite}</p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Prix d'achat HT (MAD) <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            name="prixDAchatHT"
+            value={formData.prixDAchatHT}
+            onChange={handleChange}
+            disabled={isLoading}
+            min="0"
+            step="0.01"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              errors.prixDAchatHT ? 'border-red-300' : 'border-gray-300'
+            }`}
+            placeholder="0.00"
+          />
+          {errors.prixDAchatHT && (
+            <p className="mt-1 text-sm text-red-600">{errors.prixDAchatHT}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Prix de vente HT (MAD) <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            name="prixDeVenteHT"
+            value={formData.prixDeVenteHT}
+            onChange={handleChange}
+            disabled={isLoading}
+            min="0"
+            step="0.01"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              errors.prixDeVenteHT ? 'border-red-300' : 'border-gray-300'
+            }`}
+            placeholder="0.00"
+          />
+          {errors.prixDeVenteHT && (
+            <p className="mt-1 text-sm text-red-600">{errors.prixDeVenteHT}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          TVA (%) <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          name="tva"
+          value={formData.tva}
+          onChange={handleChange}
+          disabled={isLoading}
+          min="0"
+          max="100"
+          step="0.01"
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+            errors.tva ? 'border-red-300' : 'border-gray-300'
+          }`}
+          placeholder="20.00"
+        />
+        {errors.tva && (
+          <p className="mt-1 text-sm text-red-600">{errors.tva}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          ICE <span className="text-red-500">*</span>
+          Image URL
         </label>
         <input
-          type="text"
-          name="ice"
-          value={formData.ice}
+          type="url"
+          name="image"
+          value={formData.image}
           onChange={handleChange}
           disabled={isLoading}
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.ice ? 'border-red-300' : 'border-gray-300'
+            errors.image ? 'border-red-300' : 'border-gray-300'
           }`}
-          placeholder="Enter ICE number"
+          placeholder="https://example.com/image.jpg"
         />
-        {errors.ice && (
-          <p className="mt-1 text-sm text-red-600">{errors.ice}</p>
+        {errors.image && (
+          <p className="mt-1 text-sm text-red-600">{errors.image}</p>
         )}
       </div>
 
@@ -334,7 +358,7 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
               Saving...
             </>
           ) : (
-            `${client ? 'Update' : 'Add'} Client`
+            `${article ? 'Update' : 'Add'} Article`
           )}
         </button>
         <button
@@ -353,4 +377,4 @@ const ClientForm = ({ client, onSubmit, onCancel }) => {
   );
 };
 
-export default ClientForm;
+export default ArticleForm;
