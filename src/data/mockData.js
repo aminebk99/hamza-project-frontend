@@ -74,6 +74,30 @@ export const mockClients = [
   }
 ];
 
+export const mockArtilces = [
+  {
+    id: 1,
+    reference: "R-001",
+    designation: "Designation 1",
+    stockSecurite: "15",
+    prixDAchatHT: "1500",
+    prixDeVenteHT: "2500",
+    tva: "20%",
+    image: "Image1.jpg"
+  },
+  {
+    id: 2,
+    reference: "R-002",
+    designation: "Desgination 2",
+    stockSecurite: "10",
+    prixDAchatHT: "2500",
+    prixDeVenteHT: "3500",
+    tva: "20%",
+    image: "Image2.jpg"
+  },
+ 
+];
+
 // Mock notifications
 export const mockNotifications = [
   {
@@ -132,6 +156,14 @@ export const mockStats = {
   revenueGrowth: 12.5,
   clientGrowth: 8.3
 };
+export const mockArticleStats = {
+  totalArticles: 125,
+  totalRevenue: 875000,
+  averageClientValue: 7000,
+  newArtilceThisMonth: 15,
+  revenueGrowth: 12.5,
+  articleGrowth: 8.3
+};
 
 // Utility functions for mock data
 export const mockUtils = {
@@ -169,6 +201,8 @@ export const mockUtils = {
     );
   },
 
+  
+
   // Sort clients
   sortClients: (clients, sortBy, sortOrder = 'asc') => {
     return [...clients].sort((a, b) => {
@@ -190,4 +224,6 @@ export const mockUtils = {
       }
     });
   }
+
+  
 };

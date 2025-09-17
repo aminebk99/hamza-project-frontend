@@ -1,27 +1,34 @@
-import { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
-import Header from '../Components/Common/Header';
-import Sidebar from '../Components/Common/Sidebar';
-import ClientTable from '../Components/Client/ClientTable';
-import ClientForm from '../Components/Client/ClientForm';
-import ClientStats from '../Components/Client/ClientStats';
-import { Modal } from '../Components/Modal';
-import { useClients } from '../Hooks/useClients';
+import { useState } from "react";
+import { Search, Plus } from "lucide-react";
+import Header from "../Components/Common/Header";
+import Sidebar from "../Components/Common/Sidebar";
+import ClientTable from "../Components/Client/ClientTable";
+import ClientForm from "../Components/Client/ClientForm";
+import ClientStats from "../Components/Client/ClientStats";
+import { Modal } from "../Components/Modal";
+import { useClients } from "../Hooks/useClients";
 
+
+export interface ClientType {
+  id: string | number;
+  name: string;
+  email: string;
+  [key: string]: any; // fallback for extra fields
+}
 
 const Client = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('client');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [editingClient, setEditingClient] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [activeItem, setActiveItem] = useState<string>("client");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [editingClient, setEditingClient] = useState<ClientType | null>(null);
 
   const {
     clients,
     loading,
     addClient,
     updateClient,
-    deleteClient
+    deleteClient,
   } = useClients();
 
   const user = {
@@ -46,18 +53,18 @@ const Client = () => {
     setShowModal(true);
   };
 
-  const handleEditClient = (client) => {
+  const handleEditClient = (client: ClientType) => {
     setEditingClient(client);
     setShowModal(true);
   };
 
-  const handleDeleteClient = (clientId) => {
-    if (window.confirm('Are you sure you want to delete this client?')) {
+  const handleDeleteClient = (clientId: string | number) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
       deleteClient(clientId);
     }
   };
 
-  const handleSubmitClient = async (formData) => {
+  const handleSubmitClient = async (formData: ClientType) => {
     try {
       if (editingClient) {
         await updateClient(editingClient.id, formData);
@@ -67,8 +74,8 @@ const Client = () => {
       setShowModal(false);
       setEditingClient(null);
     } catch (error) {
-      console.error('Error saving client:', error);
-      alert('Error saving client. Please try again.');
+      console.error("Error saving client:", error);
+      alert("Error saving client. Please try again.");
     }
   };
 
@@ -96,7 +103,7 @@ const Client = () => {
         user={user}
         notifications={notifications}
       />
-      
+
       <Sidebar
         isOpen={sidebarOpen}
         onClose={closeSidebar}
@@ -107,12 +114,16 @@ const Client = () => {
       <main className="lg:ml-64 pt-16">
         <div className="p-4 sm:p-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Client Management</h1>
-            
-            {/* Search and Add Button */}
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Client Management
+            </h1>
+
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="text"
                   placeholder="Search clients..."
@@ -130,11 +141,9 @@ const Client = () => {
               </button>
             </div>
 
-            {/* Client Stats */}
             <ClientStats clients={clients} searchTerm={searchTerm} />
           </div>
 
-          {/* Client Table */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <ClientTable
               clients={clients}
@@ -146,11 +155,10 @@ const Client = () => {
         </div>
       </main>
 
-      {/* Add/Edit Client Modal */}
       <Modal
         isOpen={showModal}
         onClose={handleCancelModal}
-        title={editingClient ? 'Edit Client' : 'Add New Client'}
+        title={editingClient ? "Edit Client" : "Add New Client"}
       >
         <ClientForm
           client={editingClient}

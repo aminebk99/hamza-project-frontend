@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import Header from '../Components/Common/Header';
 import Sidebar from '../Components/Common/Sidebar';
+import ClientTable from '../Components/Client/ClientTable';
 import ClientForm from '../Components/Client/ClientForm';
 import ClientStats from '../Components/Client/ClientStats';
 import { Modal } from '../Components/Modal';
-import ArticleTable from '../Article/ArticleTable';
+import { useClients } from '../Hooks/useClients';
+import ArticleStats from '../Article/ArticleStats';
 
 
 const Article = () => {
@@ -13,7 +15,7 @@ const Article = () => {
   const [activeItem, setActiveItem] = useState('client');
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editingArticle, setEditingArticle] = useState(null);
+  const [editingClient, setEditingClient] = useState(null);
 
   const {
     clients,
@@ -40,7 +42,7 @@ const Article = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
-  const handleAddArticle = () => {
+  const handleAddClient = () => {
     setEditingClient(null);
     setShowModal(true);
   };
@@ -130,13 +132,13 @@ const Article = () => {
             </div>
 
             {/* Client Stats */}
-            <ClientStats clients={clients} searchTerm={searchTerm} />
+            <ArticleStats clients={clients} searchTerm={searchTerm} />
           </div>
 
           {/* Client Table */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
-            <ArticleTable
-              articles={clients}
+            <ClientTable
+              clients={clients}
               onEdit={handleEditClient}
               onDelete={handleDeleteClient}
               searchTerm={searchTerm}
