@@ -32,8 +32,8 @@ const Client = () => {
   } = useClients();
 
   const user = {
-    name: "John Smith",
-    email: "john.smith@example.com",
+    name: "Hamza El Yazidi",
+    email: "hamza.elyazidi@example.com",
     avatar: "/api/placeholder/40/40",
   };
 

@@ -2,8 +2,8 @@
 export const mockClients = [
   {
     id: 1,
-    lastName: "John Doe",
-    email: "john.doe@example.com",
+    lastName: "Mohamed Amine",
+    email: "mohamed.amine@example.com",
     phone: "+212612345678",
     address: "123 Avenue Mohammed V, Casablanca",
     etat: "5000",
@@ -11,8 +11,8 @@ export const mockClients = [
   },
   {
     id: 2,
-    lastName: "Jane Smith",
-    email: "jane.smith@example.com",
+    lastName: "Rachid Saadaoui",
+    email: "rachid.saadaoui@example.com",
     phone: "+212623456789",
     address: "456 Boulevard Zerktouni, Casablanca",
     etat: "7500",
@@ -56,8 +56,8 @@ export const mockClients = [
   },
   {
     id: 7,
-    lastName: "David Brown",
-    email: "david.brown@example.com",
+    lastName: "Walid Brohossi",
+    email: "walid.brohossi@example.com",
     phone: "+212678901234",
     address: "147 Avenue des Nations Unies, Rabat",
     etat: "2100",

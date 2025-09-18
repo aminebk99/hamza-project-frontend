@@ -291,14 +291,14 @@ const Article = () => {
                   {articles.map((article) => (
                     <div key={article.id} className="border-b border-gray-200 p-4 hover:bg-gray-50">
                       <div className="flex items-start space-x-3">
-                        {/* <img
+                        <img
                           src={article.image || "https://via.placeholder.com/40x40?text=IMG"}
                           alt={article.designation}
                           className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
                           onError={(e) => {
                             e.currentTarget.src = "https://via.placeholder.com/40x40?text=IMG";
                           }}
-                        /> */}
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
